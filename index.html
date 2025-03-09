@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Игра: Лови цветы</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to right, pink, red);
+            overflow: hidden;
+           
+        }
+        #gameArea {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            border: 2px solid #000;
+            overflow: hidden;
+        }
+        .flower {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: pink;
+            border-radius: 50%;
+            background-image: url(images/bouquet_9578022.png);
+            background-size: cover;
+            cursor: pointer;
+        }
+        .floating-card {
+            background-color: pink;
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.3s;
+        }
+        .floating-card:hover {
+            transform: translateY(-10px);
+        }
+        .congratulation {
+            font-size: 2em;
+            margin: 25px;
+        }
+
+    @media screen and (min-width: 768px) and (max-width: 1023px) {
+        body {
+        flex-direction: column;
+        overflow:auto;
+        }
+
+       }
+
+       @media screen and (max-width: 767px) {
+        body {
+        flex-direction: column;
+        overflow:auto;
+        }
+        .congratulation {
+            font-size: 1em; ;
+            margin: 10px;
+        }
+
+        .greeting-card img {
+         height:100px ;
+         width:100px ;
+        }
+       }
+
+    </style>
+</head>
+<body>
+    <div id="timer">02:00</div>
+    <div class="game-container">
+        <h2>Собери 50 цветов за две минуты! </h2>
+        <div id="gameArea"></div>
+       
+    </div>
+    <div class="congratulation">
+        <h1>С Международным женским днем!</h1>
+        <p>Дорогие женщины, поздравляем вас с этим замечательным днем! Желаем вам счастья, здоровья и любви!</p>
+        <p>Вы — источник вдохновения и силы. Пусть каждый ваш день будет наполнен радостью и улыбками!</p>
+    </div>
+    <div class="greeting-card">
+        <h1>С 8 Марта!</h1>
+        <img src="images/bouquet_9578022.png" alt="Держите открытку!" />
+    </div>
+    <script>
+        const gameArea = document.getElementById('gameArea');
+        let score = 0;
+        const winScore = 50;
+        let count = 0; // Счетчик кликов
+        let clickCount = 0;
+        let flowerCount = 0; // Счетчик для цветов
+        let flowerClickCount = 0; // Счетчик кликов на цветы
+
+        function createFlower() {
+            const flower = document.createElement('div');
+            flower.classList.add('flower');
+            flower.style.left = Math.random() * (gameArea.clientWidth - 50) + 'px';
+            flower.style.top = '0px';
+            gameArea.appendChild(flower);
+            fall(flower);
+        }
+
+        function fall(flower) {
+            let position = 0;
+            const interval = setInterval(() => {
+                if (position >= gameArea.clientHeight - 50) {
+                    clearInterval(interval);
+                    gameArea.removeChild(flower);
+                } else {
+                    position += 5;
+                    flower.style.top = position + 'px';
+                }
+            }, 100);
+        }
+        let timeLeft = 120; // 2 минуты в секундах
+        const timerElement = document.getElementById('timer');
+
+        const timerInterval = setInterval(() => {
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerElement.innerHTML = "Время вышло!";
+                alert("Время вышло! Вы проиграли.");
+            } else {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerElement.innerHTML = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                timeLeft--;
+            }
+        }, 1000);
+        
+
+        gameArea.addEventListener('click', (event) => {
+            const flower = event.target;
+            if (flower.classList.contains('flower')) {
+                score++;
+                if (score >= winScore) {
+                    alert('Вы собрали все цветы! Спасибо за продвижение :)');
+                }
+                gameArea.removeChild(flower);
+                console.log('Счет: ' + score);
+                count++; // Увеличиваем счетчик при клике
+                console.log(`Количество кликов: ${count}`); // Выводим количество кликов в консоль
+            }
+        });
+
+        const flowers = document.querySelectorAll('.flower'); // Предполагается, что цветы имеют класс 'flower'
+        
+        flowers.forEach(flower => {
+            flower.addEventListener('click', () => {
+                clickCount++; // Увеличиваем счетчик кликов
+                flowerCount++; // Увеличиваем счетчик для цветов
+                console.log(`Клики: ${clickCount}, Цветы: ${flowerCount}`); // Выводим в консоль
+                flowerClickCount++; // Увеличиваем счетчик при клике на цветок
+                updateFlowerClickCountDisplay();
+            });
+        });
+
+        function updateFlowerClickCountDisplay() {
+            const flowerClickCountDisplay = document.getElementById('flowerClickCount');
+            flowerClickCountDisplay.textContent = `Клики на цветы: ${flowerClickCount}`;
+        }
+
+        setInterval(createFlower, 1000);
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
